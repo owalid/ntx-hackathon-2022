@@ -8,12 +8,12 @@ from model import run_model
 from datetime import timedelta
 
 
-step = 1000
+step = 10
 
-past = 30000
-future = 10000
+past = 300000
+future = 100000
 learning_rate = 0.0001
-batch_size = 30000
+batch_size = 100000
 epochs = 10
 
 def select_data_around_event(df_filtered, events, before=0, after=5):

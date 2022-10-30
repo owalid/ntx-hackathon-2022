@@ -1,5 +1,6 @@
 import tensorflow as tf
 import tensorflow.keras.layers as tfl
+from tensorflow import keras
 
 def get_model(inputs_, num_classes=3):
   
@@ -61,10 +62,23 @@ def run_model(dataset_train, dataset_val, inputs, num_classes, epochs):
     model.compile(optimizer='adam', loss="sparse_categorical_crossentropy", metrics=['accuracy'])
     print(model.summary())
 
+
+    path_checkpoint = "model_checkpoint.h5"
+
+    es_callback = keras.callbacks.EarlyStopping(monitor="sparse_categorical_crossentropy", min_delta=0, patience=5)
+    modelckpt_callback = keras.callbacks.ModelCheckpoint(
+        monitor="sparse_categorical_crossentropy",
+        filepath=path_checkpoint,
+        verbose=1,
+        save_weights_only=True,
+        save_best_only=True,
+    )
+
     history = model.fit(
         dataset_train,
         epochs=epochs,
         validation_data=dataset_val,
+        callbacks=[es_callback, modelckpt_callback],
     )
 
-    return history
+    return (history, model)

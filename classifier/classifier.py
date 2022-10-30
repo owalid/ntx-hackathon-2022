@@ -7,6 +7,15 @@ from tensorflow import keras
 from model import run_model
 from datetime import timedelta
 
+
+step = 1000
+
+past = 50000
+future = 10000
+learning_rate = 0.0001
+batch_size = 300000
+epochs = 10
+
 def select_data_around_event(df_filtered, events, before=0, after=5):
     df_output = None
     for idx in events.loc[events.label=='start'].index:
@@ -159,13 +168,6 @@ if __name__ == "__main__":
 
     split_fraction = 0.715
     train_split = int(split_fraction * int(final_df.shape[0]))
-    step = 100
-
-    past = 5000
-    future = 1000
-    learning_rate = 0.001
-    batch_size = 30000
-    epochs = 10
 
     start = past + future
     end = start + train_split

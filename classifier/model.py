@@ -5,7 +5,7 @@ def get_model(inputs_, num_classes=3):
   
     inputs = tf.keras.Input(shape=(inputs_.shape[1], inputs_.shape[2]))
 
-    model = tfl.Dropout(0.05)(inputs)
+    model = tfl.Dropout(0.5)(inputs)
     model = tfl.Conv1D(filters=16, kernel_size=120, strides=6, padding="same")(inputs)
     model = tfl.ReLU()(model)
     model = tfl.MaxPool1D(pool_size=2, strides=2, padding='same')(model)

@@ -2,14 +2,22 @@
 # https://www.researchgate.net/publication/343250071_Recognizing_Emotions_Evoked_by_Music_using_CNN-LSTM_Networks_on_EEG_signals
 import pandas as pd
 from utils import get_dfs, extract_classes
-# from sklearn.model_selection import train_test_split
 from sklearn import preprocessing
-# from keras import backend as K
-# from keras.utils import to_categorical
 from tensorflow import keras
 from model import run_model
-# import tensorflow as tf
-# import tensorflow.keras.layers as tfl
+from datetime import timedelta
+
+def select_data_around_event(df_filtered, events, before=0, after=5):
+    df_output = None
+    for idx in events.loc[events.label=='start'].index:
+        start = pd.to_datetime(idx) + timedelta(seconds=before)
+        end = pd.to_datetime(idx) + timedelta(seconds=after)
+        if df_output is None:
+            df_output = df_filtered.loc[(start<=pd.to_datetime(df_filtered.index)) & (pd.to_datetime(df_filtered.index)<=end)]
+        else:
+            df_output = pd.concat([df_output, df_filtered.loc[(start<=pd.to_datetime(df_filtered.index)) & (pd.to_datetime(df_filtered.index)<=end)]])
+        df_output = df_output.drop_duplicates().copy()
+    return df_output
 
 
 def normalize(data, train_split):
@@ -42,7 +50,7 @@ def prepare_ts_for_training(ts_df, event_df):
         if c < len(classes) - 2:
             tmp_event_df = tmp_event_df.drop(tmp_event_df.index[0])
 
-        current = ts_df[start:end].head(5000)
+        current = ts_df[start:end]
         current['class'] = classes[c].replace('"', '')
         if res is None:
             res = current
@@ -108,69 +116,73 @@ def load_ds():
 
 
 
-hdf_file_path = [
-    "../data/20221029-171117.hdf5",
-    "../data/20221029-192231.hdf5",
-    "../data/20221029-200201.hdf5",
-    "../data/20221029-202757.hdf5",
-    "../data/othmane_assis_EEG_20221029-231521.hdf5"
-]
+if __name__ == "__main__":
 
-result_filtered = None
-result_events = None
+    hdf_file_path = [
+        "../data/20221029-171117.hdf5",
+        "../data/20221029-192231.hdf5",
+        "../data/20221029-200201.hdf5",
+        "../data/20221029-202757.hdf5",
+        "../data/othmane_assis_EEG_20221029-231521.hdf5"
+    ]
 
-for path in hdf_file_path:
-    _, df_events, df_filtered, _ = get_dfs(path)
-    if result_filtered is None:
-        result_filtered = df_filtered
-    else:
-        result_filtered = pd.concat([result_filtered, df_filtered])
+    result_filtered = None
+    result_events = None
 
-    if result_events is None:
-        result_events = df_events
-    else:
-        result_events = pd.concat([result_events, df_events])
-# Clean events to have only 3 classes
-result_events.replace('"repos"', 'neutral', inplace=True)
-result_events.replace(['"calme"', '"lent"'], 'positive', inplace=True)
-result_events.replace(['"rapide"', '"agite"'], 'negative', inplace=True)
-result_events = result_events[result_events.data != '"fin"']
-result_events = result_events[result_events.data != '"calme"']
-result_events = result_events[result_events.data != '"agite"']
-result_events = result_events[result_events.data != '"interuption"']
+    for path in hdf_file_path:
+        _, df_events, df_filtered, _ = get_dfs(path)
 
+        df_filtered = select_data_around_event(df_filtered, df_events, before=-2, after=12)
+        if result_filtered is None:
+            result_filtered = df_filtered
+        else:
+            result_filtered = pd.concat([result_filtered, df_filtered])
 
-
-final_df = prepare_ts_for_training(df_filtered, df_events)
-
-
-
-split_fraction = 0.715
-train_split = int(split_fraction * int(final_df.shape[0]))
-step = 100
-
-past = 1000
-future = 300
-learning_rate = 0.001
-batch_size = 1500
-epochs = 10
-
-start = past + future
-end = start + train_split
-
-
-dataset_train, dataset_val = load_ds()
-
-
-for batch in dataset_train.take(1):
-    inputs, targets = batch
-
-print("Input shape:", inputs.numpy().shape)
-print("Target shape:", targets.numpy().shape)
+        if result_events is None:
+            result_events = df_events
+        else:
+            result_events = pd.concat([result_events, df_events])
+    # Clean events to have only 3 classes
+    result_events.replace('"repos"', 'neutral', inplace=True)
+    result_events.replace(['"calme"', '"lent"'], 'positive', inplace=True)
+    result_events.replace(['"rapide"', '"agite"'], 'negative', inplace=True)
+    result_events = result_events[result_events.data != '"fin"']
+    result_events = result_events[result_events.data != '"calme"']
+    result_events = result_events[result_events.data != '"agite"']
+    result_events = result_events[result_events.data != '"interuption"']
 
 
 
-m = run_model(dataset_train, dataset_val, inputs, num_classes=3, epochs=epochs)
+    final_df = prepare_ts_for_training(df_filtered, df_events)
+
+
+
+    split_fraction = 0.715
+    train_split = int(split_fraction * int(final_df.shape[0]))
+    step = 100
+
+    past = 5000
+    future = 1000
+    learning_rate = 0.001
+    batch_size = 30000
+    epochs = 10
+
+    start = past + future
+    end = start + train_split
+
+
+    dataset_train, dataset_val = load_ds()
+
+
+    for batch in dataset_train.take(1):
+        inputs, targets = batch
+
+    print("Input shape:", inputs.numpy().shape)
+    print("Target shape:", targets.numpy().shape)
+
+
+
+    m = run_model(dataset_train, dataset_val, inputs, num_classes=3, epochs=epochs)
 
 
 

@@ -23,6 +23,7 @@ Does it allow us to relax ?
 We have acquired data from a bitalino kit and using the Timeflux tool. We focused on measuring the brain with an EEG sensor.
 The whole experience is spent in calmness, with eyes closed. (To remove the maximum amount of external interference)
 
+![20221030_141859](https://user-images.githubusercontent.com/28403617/199126599-168464dd-cccb-4068-a5f3-7f95b2a1794d.jpg)
 
 3 different stimuli randomly triggered by an operator. 2 times per subject. for 3 subjects in total.
 A data collection takes an average of 10 minutes
@@ -38,6 +39,10 @@ Each music was chosen by the subject, because the notion of relaxing and stressf
 ## Analysis
 
 With our data we tried to find curves or breaks between the states but we didn't really find anything.
+
+<img width="1423" alt="Capture_decran_2022-10-30_a_14 33 02" src="https://user-images.githubusercontent.com/28403617/199126736-2a4e1a92-012c-41e4-b632-f04858636023.png">
+
+
 
 ## Modelization
 

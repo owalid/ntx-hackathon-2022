@@ -1,4 +1,6 @@
-# StressLessLife
+<div align="center">
+  <img width="700" src="https://user-images.githubusercontent.com/28403617/199127256-6ee22579-c24d-4f1c-be1c-fca68cf25af5.svg"/>
+</div>
 
 - [Introduction](#introduction)
 - [Issue](#issue)
@@ -10,11 +12,13 @@
 ## Introduction
 
 We started with a simple question: It's possible to measured the impact of music on the brain ?
+
 So we conducted an experiment
 
 ## Issue
 
 Does music have an impact on our signals ?
+
 Does it allow us to relax ?
 
 
@@ -42,6 +46,8 @@ With our data we tried to find curves or breaks between the states but we didn't
 
 <img width="1423" alt="Capture_decran_2022-10-30_a_14 33 02" src="https://user-images.githubusercontent.com/28403617/199126736-2a4e1a92-012c-41e4-b632-f04858636023.png">
 
+
+<img width="1677" alt="Capture_decran_2022-10-30_a_14 31 20" src="https://user-images.githubusercontent.com/28403617/199127469-f130354b-080f-4f5e-a1d5-a2d1930019ec.png">
 
 
 ## Modelization
